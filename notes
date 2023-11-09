@@ -1,0 +1,17 @@
+
+converstions need group chats
+conversaiton needs owner
+conversaition needs to transfer ownership
+    - change user_1 and user_2 to just owner
+    - then in seperate table create participants table with conversation_id, user_id, status and un-read count
+    - then fetch conversation where user is either owner or user_id is a participant in a conversation_id
+
+
+conversation needs to block participants
+    - status column on participants table
+
+conversaiton needs to be private or public
+    - private column set to true or false (1,0)
+
+store un-read count of messages for participants in a converstions
+    - create an un-read count on the participants table to count how mnay messages are un-read, set to 0 after chat is opened
