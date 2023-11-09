@@ -1,10 +1,9 @@
 <script setup>
     import Dropdown from '@/Components/Dropdown.vue';
     import DropdownLink from '@/Components/DropdownLink.vue';
-    import { useRoute, useRouter } from 'vue-router';
     import { Inertia } from '@inertiajs/inertia';
 
-    const router = useRouter();
+    
 
     const logout = () => {
         Inertia.post('/logout').then(() => {

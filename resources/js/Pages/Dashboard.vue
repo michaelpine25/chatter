@@ -4,7 +4,6 @@ import InvitationSentNotification from '../Components/InvitationSentNotification
 import ConversationSettings from '../Components/ConversationSettings.vue';
 import ProfileDropdown from '../Components/ProfileDropDown.vue';
 import { ref, onMounted, defineProps, defineEmits, watch, onBeforeUnmount} from 'vue';
-import { useRoute, useRouter } from 'vue-router';
 import { usePage } from '@inertiajs/inertia-vue3';
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue';
 import ChatBox from '../Components/ChatBox.vue';
@@ -14,6 +13,7 @@ import { UserCircleIcon } from '@heroicons/vue/24/solid';
 import {
   UsersIcon,
 } from '@heroicons/vue/24/outline'
+import { Inertia } from '@inertiajs/inertia';
 
 const sidebarOpen = ref(false);
 const conversations = ref(null);
@@ -27,8 +27,6 @@ const viewingInvitations = ref(false);
 const invitations = ref(null);
 const invitationSent = ref(false);
 const conversationName = ref(null);
-const route = useRoute();
-const router = useRouter();
 const mobileSidebar = ref(false);
 
 const getConversationData = async (conversationId) => {
@@ -44,10 +42,9 @@ const getConversationData = async (conversationId) => {
         // Handle the error if needed
     }
     resetUnreadCount(conversationId);
-    await router.push({ name: 'conversation', params: { id: conversationId } });
 
   } else {
-    await router.push({ name: 'dashboard'});
+    //
   }
 }
 
@@ -158,7 +155,6 @@ const createConversation = async (name) => {
       let response = await axios.post('/api/conversations', {
         name: name
       })
-      router.push({ name: 'conversation', params: { id: response.data.conversation_id } });
       form.name = '';
       toggleCreatingChat();
       getConversations();
@@ -208,7 +204,6 @@ const acceptInvite = (id) => {
   axios.post('/api/invitation/accept', {
       conversationId: id
   }).then((response) => {
-    router.push({ name: 'conversation', params: { id: id } });
     const indexToAccept = invitations.value.invitations.findIndex(invitation => invitation.conversation_id === id);
     invitations.value.invitations.splice(indexToAccept, 1);
   }).catch((error) => {
@@ -239,19 +234,13 @@ const listenForInvitationAccepted = () => {
 const listenForNewMessage = () => {
   Echo.channel(`message`)
   .listen('MessageSent', (event) => {
-    if(route.params.id == event.conversationId) {
+    if(selectedConversationId.value == event.conversationId) {
       messages.value = [...messages.value, event.message];
     }else{
       getConversations();
     }
   });
 }
-
-watch(() => route.params.id, (newConversationId) => {
-  messages.value = null;
-  conversationId.value = newConversationId;
-  getConversationData(newConversationId);
-});
 
 onMounted( async () => {
   getConversations();

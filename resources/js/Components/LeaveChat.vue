@@ -1,12 +1,10 @@
 <script setup>
 import { ref, defineEmits, defineProps} from 'vue'
-import { useRoute, useRouter } from 'vue-router';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 
 const open = ref(true)
 const emit = defineEmits(['close']);
-const router = useRouter();
 
 const { conversation } = defineProps(['conversation']);
 const conversationName = conversation.conversation.name;
@@ -17,7 +15,6 @@ const closeDialog = () => {
 }
 
 const leaveChat = (conversationId) => {
-    router.push({ name: 'dashboard' });
     axios.post(`/api/participants/${conversationId}/delete`).then((response) => {
         console.log(response.data);
         closeDialog();

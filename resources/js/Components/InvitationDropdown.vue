@@ -6,12 +6,10 @@ import { Head } from '@inertiajs/vue3';
 import { Inertia } from '@inertiajs/inertia-vue3';
 import { ref, onMounted, defineProps, defineEmits} from 'vue';
 import { CheckCircleIcon } from '@heroicons/vue/20/solid'
-import { useRoute, useRouter } from 'vue-router';
 
 const { invitations } = defineProps(['invitations']);
 const emit = defineEmits(['acceptInvite', 'deleteInvite']);
 
-const router = useRouter();
 
 
 const acceptInvitation = (conversationId) => {
