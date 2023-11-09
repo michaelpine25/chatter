@@ -17,9 +17,9 @@ class ConversationController extends Controller
        $user1Id = Auth::user()->id;
        $name = $request->input('name');
 
-       $conversation = Conversation::create([
-        'owner_id' => $user1Id,
-        'name' => $name,
+        $conversation = Conversation::create([
+            'owner_id' => $user1Id,
+            'name' => $name,
         ]);
 
         Participant::create([

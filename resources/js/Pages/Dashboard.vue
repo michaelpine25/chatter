@@ -290,10 +290,10 @@ onMounted( async () => {
                       <div class="flex items-center justify-center ml-2">
                         <img class="h-12 w-16 flex-none " src="../../../icons/group.png"> 
                       </div>
-                      <form @submit.prevent=" form.name && createConversation(form.name)" class=" min-w-0 flex align-left items-start flex-col w-full">
+                      <form @submit.prevent="form.name && createConversation(form.name)" class=" min-w-0 flex align-left items-start flex-col w-full">
                         <input v-model="form.name" maxlength="25" class="w-full text-md font-semibold leading-6 text-black flex rounded-lg py-1 text-sm bg-white border-none focus:coutline-none focus:ring-0" placeholder="Name your chat">
                           <div>
-                            <button @click="createConversation" type="submit" class="truncate text-xs leading-5 mr-2 mt-2 rounded bg-blue-50 px-2 text-xs font-semibold text-blue-600 shadow-sm hover:bg-blue-100">Create</button>
+                            <button type="submit" class="truncate text-xs leading-5 mr-2 mt-2 rounded bg-blue-50 px-2 text-xs font-semibold text-blue-600 shadow-sm hover:bg-blue-100">Create</button>
                             <button @click="toggleCreatingChat" class="truncate text-xs leading-5 rounded bg-gray-50 px-2 text-xs font-semibold text-gray-600 shadow-sm hover:bg-gray-100">Cancel</button>
                           </div>
                       </form> 

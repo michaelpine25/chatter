@@ -15,18 +15,18 @@ use App\Events\InvitationAccepted;
 class InvitationController extends Controller
 {
     public function list(Request $request)
-{
-    $currentUser = Auth::user();
+    {
+        $currentUser = Auth::user();
 
-    $invitations = $currentUser->invitations()->with('sender', 'conversation')->get();
+        $invitations = $currentUser->invitations()->with('sender', 'conversation')->get();
 
-    foreach ($invitations as $invitation) {
-        $sender = $invitation->sender;  // Access sender
-        $conversation = $invitation->conversation;  // Access conversation
+        foreach ($invitations as $invitation) {
+            $sender = $invitation->sender;  // Access sender
+            $conversation = $invitation->conversation;  // Access conversation
 
-        return response()->json(['invitations' => $invitations]);
+            return response()->json(['invitations' => $invitations]);
+        }
     }
-}
 
     public function store(Request $request, $conversationId) {
 
