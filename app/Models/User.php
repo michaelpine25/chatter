@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Conversation;
 use App\Models\Participant;
-use App\Models\invitation;
+use App\Models\Invitation;
 
 
 class User extends Authenticatable
