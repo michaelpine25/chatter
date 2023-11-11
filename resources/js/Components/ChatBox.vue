@@ -7,7 +7,7 @@ import Participants from './Participants.vue';
 import { UserCircleIcon } from '@heroicons/vue/24/solid';
 import ViewImage from './ViewImage.vue';
 
-const { conversationId, messages, participants, currentUser } = defineProps(['conversationId', 'messages', 'participants', 'currentUser']);
+const { conversationId, messages, participants, currentUser, conversation } = defineProps(['conversationId', 'messages', 'participants', 'currentUser', 'conversation']);
 const chatContentRef = ref(null);
 const file = ref(null);
 const imageInput = ref(null);
@@ -106,7 +106,7 @@ onMounted(() => {
 <div class="flex justify-end">
   <div class="flex flex-col w-full">
     <div class=" bg-white border-r flex-1">
-      <div ref="chatContentRef" class="h-[82vh] 2xl:h-[88vh] overflow-y-auto mt-2">
+      <div ref="chatContentRef" class="h-[82vh] 2xl:h-[88vh] overflow-y-auto">
         <!-- Chat content goes here -->
         <div v-for="message in messages" :key="message.id" :class="isSent(message, currentUser.id) ? 'flex justify-end mx-2 py-1' : 'flex justify-start mx-2 py-1'">
           <div v-if="isSent(message, currentUser.id)" class=" max-w-[70%] flex items-end flex-col">
@@ -159,6 +159,7 @@ onMounted(() => {
       <Participants
       :participants="participants"
       :conversationId="conversationId"
+      :conversation="conversation"
     />
 </div>
 

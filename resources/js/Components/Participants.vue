@@ -1,13 +1,26 @@
 <script setup>
 import { ref, defineProps} from 'vue';
-import { UserCircleIcon } from '@heroicons/vue/24/solid'
+import { UserCircleIcon } from '@heroicons/vue/24/solid';
+import InviteMember from './InviteMember.vue';
+import SuccessNotification from './InvitationSentNotification.vue';
 
-const { participants, conversationId } = defineProps(['participants', "conversationId"]);
+const { participants, conversationId, conversation} = defineProps(['participants', "conversationId", 'conversation']);
+
+const inviting = ref(false);
+const successInviting = ref(false);
+
+const toggleInvitingMember = () => {
+  inviting.value = !inviting.value
+}
+
+const successNotification = () => {
+  successInviting.value = true;
+}
 
 </script>
 
 <template>
-  <div class="flex ">
+  <div class="flex-col ">
     <div class="max-h-[89vh] overflow-y-auto">
       <div class="lg:flex hidden lg:px-5">
         <ul role="list" class="divide-y divide-gray-100 flex flex-col h-[83vh]">
@@ -37,7 +50,21 @@ const { participants, conversationId } = defineProps(['participants', "conversat
         </ul>
       </div>
     </div>
+      <button @click="toggleInvitingMember" class=" mx-auto w-3/4 justify-center group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 bg-gray-100 hover:bg-gray-200 hover:text-blue-500">
+        Invite Member
+      </button>
   </div>
 
+  <div v-if="inviting">
+    <InviteMember 
+      :conversation="conversation"
+      @close="toggleInvitingMember"
+      @successInviting="successNotification"
+    />
+  </div>
+
+  <div v-if="successInviting">
+    <SuccessNotification class="mt-12"/>
+  </div>
 
 </template>

@@ -30,7 +30,7 @@ class ConversationController extends Controller
             'admin' => true
         ]);
         
-        return response()->json(['conversation_id' => $conversation->id], 200);
+        return response()->json(['conversation' => $conversation], 200);
     }
 
     public function list(Request $request) {

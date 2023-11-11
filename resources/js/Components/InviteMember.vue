@@ -7,8 +7,8 @@ import { CheckIcon } from '@heroicons/vue/24/outline'
 const { conversation } = defineProps(['conversation']);
 const emit = defineEmits(['close', 'successInviting']);
 const responseError = ref(null);
-const conversationId = conversation.conversation.id;
-const conversationName = conversation.conversation.name;
+const conversationId = conversation.id;
+const conversationName = conversation.name;
 
 const form = useForm({
     recipientEmail: '',
@@ -24,18 +24,18 @@ const invite = (conversationId, recipientEmail) => {
   responseError.value = null;
   axios.post(`/api/invitations/${conversationId}`, {
       recipientEmail: recipientEmail
-    })
-    .then(() => {
-      open.value = false;
-      emit('successInviting');
-      responseError.value = null;
-      form.recipientEmail = ''; 
-    })
-    .catch(error => {
-      open.value = true
-      console.error('Error sending invitation:', error);
-      responseError.value = error.response ? error.response.data : 'Unknown error';
-    });
+  })
+  .then(() => {
+    open.value = false;
+    emit('successInviting');
+    responseError.value = null;
+    form.recipientEmail = ''; 
+  })
+  .catch(error => {
+    open.value = true
+    console.error('Error sending invitation:', error);
+    responseError.value = error.response ? error.response.data : 'Unknown error';
+  });
 };
 
 
@@ -57,7 +57,7 @@ const invite = (conversationId, recipientEmail) => {
                 <form @submit.prevent=" form.recipientEmail && invite(conversationId, form.recipientEmail)">
                     <div>
                         <div class="mx-auto flex items-center justify-center rounded-full">
-                          <span v-if="conversation.conversation.conversation_photo" class="w-16 h-16 overflow-hidden bg-white rounded-full"><img class="object-cover w-full h-full" :src="'/conversation-photos/' + conversation.conversation.conversation_photo"></span>
+                          <span v-if="conversation.conversation_photo" class="w-16 h-16 overflow-hidden bg-white rounded-full"><img class="object-cover w-full h-full" :src="'/conversation-photos/' + conversation.conversation.conversation_photo"></span>
                           <span v-else class="w-16 h-16 rounded-full"><img src="../../../icons/group.png"></span>
                         </div>
 

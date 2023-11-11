@@ -8,16 +8,12 @@ import UpdatePhoto from './ChangeConversationPhoto.vue';
 import LeaveChat from './LeaveChat.vue';
 
 const conversation = defineProps(['conversation']);
-const emit = defineEmits(['invitationNotification', 'getConversations'])
+const emit = defineEmits([ 'getConversations'])
 
 const inviting = ref(false);
 const updatingPhoto = ref(false);
 const leavingChat = ref(false);
-const invitationSent = ref(false);
 
-const toggleInvite = () => {
-    inviting.value = !inviting.value;
-}
 const toggleUpdatingPhoto = () => {
   updatingPhoto.value = !updatingPhoto.value;
 }
@@ -26,10 +22,6 @@ const toggleLeave = () => {
   leavingChat.value = !leavingChat.value;
 }
 
-const successNotification = () => {
-    toggleInvite();
-    emit('invitationNotification')
-}
 
 </script>
 
@@ -50,23 +42,12 @@ const successNotification = () => {
             <button @click="toggleUpdatingPhoto" class="block px-4 py-2 text-sm w-full hover:bg-gray-100 text-left">Edit Group Picture</button>
           </MenuItem>
           <MenuItem >
-            <button @click="toggleInvite" class="block px-4 py-2 text-sm w-full hover:bg-gray-100 text-left">Invite Member</button>
-          </MenuItem>
-          <MenuItem >
             <button @click="toggleLeave" class="block px-4 py-2 text-sm w-full hover:bg-gray-100 text-left">Leave Chat</button>
           </MenuItem>
         </div>
       </MenuItems>
     </transition>
   </Menu>
-
-    <div v-if="inviting">
-        <InviteMember 
-        @close="toggleInvite"
-        :conversation="conversation"
-        @successInviting="successNotification"
-         />
-    </div>
 
     <div v-if="updatingPhoto">
       <UpdatePhoto

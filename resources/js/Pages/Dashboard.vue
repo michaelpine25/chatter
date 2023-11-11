@@ -1,6 +1,5 @@
 <script setup>
 import ProfilePicture from '../Components/ProfilePicture.vue';
-import InvitationSentNotification from '../Components/InvitationSentNotification.vue';
 import ConversationSettings from '../Components/ConversationSettings.vue';
 import ProfileDropdown from '../Components/ProfileDropDown.vue';
 import { ref, onMounted, defineProps, defineEmits, watch, onBeforeUnmount} from 'vue';
@@ -25,23 +24,23 @@ const currentUser = ref(null);
 const conversationId = ref(null);
 const viewingInvitations = ref(false);
 const invitations = ref(null);
-const invitationSent = ref(false);
 const conversationName = ref(null);
 const mobileSidebar = ref(false);
+const selectedConversation = ref(null);
 
-const getConversationData = async (conversationId) => {
-  if (await userIsAuthorized(conversationId)) {
-
+const getConversationData = async (conversation) => {
+  if (await userIsAuthorized(conversation.id)) {
+    selectedConversation.value = conversation;
     messages.value = null;
-    selectedConversationId.value = conversationId
+    selectedConversationId.value = conversation.id;
     try {
-        messages.value = await fetchMessages(conversationId);
-        fetchParticipants(conversationId);
+        messages.value = await fetchMessages(conversation.id);
+        fetchParticipants(conversation.id);
     } catch (error) {
         console.error('Error fetching messages:', error);
         // Handle the error if needed
     }
-    resetUnreadCount(conversationId);
+    resetUnreadCount(conversation.id);
 
   } else {
     //
@@ -113,10 +112,6 @@ const toggleCreatingChat = () => {
   creatingChat.value = !creatingChat.value; 
 };
 
-const toggleInvitationNotification = () => {
-  invitationSent.value = !invitationSent.value
-}
-
 const handleCreatedConversation = (conversationId) => {
   getConversations();
   getConversationData(conversationId);
@@ -158,6 +153,7 @@ const createConversation = async (name) => {
       form.name = '';
       toggleCreatingChat();
       getConversations();
+      getConversationData(response.data.conversation);
     }
     catch (error) {
       console.log(error.response.data);
@@ -283,7 +279,7 @@ onMounted( async () => {
                         <input v-model="form.name" maxlength="25" class="w-full text-md font-semibold leading-6 text-black flex rounded-lg py-1 text-sm bg-white border-none focus:coutline-none focus:ring-0" placeholder="Name your chat">
                           <div>
                             <button type="submit" class="truncate text-xs leading-5 mr-2 mt-2 rounded bg-blue-50 px-2 text-xs font-semibold text-blue-600 shadow-sm hover:bg-blue-100">Create</button>
-                            <button @click="toggleCreatingChat" class="truncate text-xs leading-5 rounded bg-gray-50 px-2 text-xs font-semibold text-gray-600 shadow-sm hover:bg-gray-100">Cancel</button>
+                            <button @click="toggleCreatingChat" type="button" class="truncate text-xs leading-5 rounded bg-gray-50 px-2 text-xs font-semibold text-gray-600 shadow-sm hover:bg-gray-100">Cancel</button>
                           </div>
                       </form> 
                     </div>
@@ -291,7 +287,7 @@ onMounted( async () => {
 
                   <li v-for="conversation in conversations" :key="conversation.id">
                     <div :class="[selectedConversationId == conversation.id ? 'bg-blue-50' : 'text-gray-700 hover:bg-blue-50', 'flex rounded group w-full']">
-                        <button @click="getConversationData(conversation.id)" class="w-full group gap-x-2 flex rounded-md px-2 py-5 text-sm leading-6 font-semibold">
+                        <button @click="getConversationData(conversation)" class="w-full group gap-x-2 flex rounded-md px-2 py-5 text-sm leading-6 font-semibold">
                           <div v-if="conversation.conversation_photo" class="w-12 h-12 overflow-hidden bg-white rounded-full">
                             <img class="object-cover w-full h-full flex-none" :src="'/conversation-photos/' + conversation.conversation_photo"> 
                           </div>
@@ -321,7 +317,6 @@ onMounted( async () => {
                         <div class="hidden group-hover:block" >
                           <ConversationSettings
                             :conversation="conversation"
-                            @invitationNotification="toggleInvitationNotification"             
                           />
                         </div>
                     </div>
@@ -358,10 +353,10 @@ onMounted( async () => {
                     <div class="flex items-center justify-center ml-2">
                       <img class="h-12 w-16 flex-none " src="../../../icons/group.png"> 
                     </div>
-                    <form @submit.prevent=" form.name && createConversation(form.name)" class=" min-w-0 flex align-left items-start flex-col w-full">
+                    <form @submit.prevent="form.name && createConversation(form.name)" class=" min-w-0 flex align-left items-start flex-col w-full">
                       <input v-model="form.name" maxlength="25" class="w-full text-md font-semibold leading-6 text-black flex rounded-lg py-1 text-sm bg-white border-none focus:coutline-none focus:ring-0" placeholder="Name your chat">
                         <div>
-                          <button @click="createConversation" type="submit" class="truncate text-xs leading-5 mr-2 mt-2 rounded bg-blue-50 px-2 text-xs font-semibold text-blue-600 shadow-sm hover:bg-blue-100">Create</button>
+                          <button type="submit" class="truncate text-xs leading-5 mr-2 mt-2 rounded bg-blue-50 px-2 text-xs font-semibold text-blue-600 shadow-sm hover:bg-blue-100">Create</button>
                           <button @click="toggleCreatingChat" class="truncate text-xs leading-5 rounded bg-gray-50 px-2 text-xs font-semibold text-gray-600 shadow-sm hover:bg-gray-100">Cancel</button>
                         </div>
                     </form> 
@@ -370,7 +365,7 @@ onMounted( async () => {
 
                 <li v-for="conversation in conversations" :key="conversation.id">
                   <div :class="[selectedConversationId == conversation.id ? 'bg-blue-50' : 'text-gray-700 hover:bg-blue-50', 'flex rounded group w-full']">
-                      <button @click="getConversationData(conversation.id)" class="w-full group gap-x-2 flex rounded-md px-2 py-5 text-sm leading-6 font-semibold">
+                      <button @click="getConversationData(conversation)" class="w-full group gap-x-2 flex rounded-md px-2 py-5 text-sm leading-6 font-semibold">
                         <div v-if="conversation.conversation_photo" class="w-12 h-12 overflow-hidden bg-white rounded-full">
                           <img class="object-cover w-full h-full flex-none" :src="'/conversation-photos/' + conversation.conversation_photo"> 
                         </div>
@@ -400,7 +395,6 @@ onMounted( async () => {
                       <div class="hidden group-hover:block" >
                         <ConversationSettings
                           :conversation="conversation"
-                          @invitationNotification="toggleInvitationNotification"             
                         />
                       </div>
                   </div>
@@ -461,9 +455,7 @@ onMounted( async () => {
         </div>
       </div>
 
-
       <main class="bg-white lg:pl-72 ">
-        <!-- Set a max-width for the ChatBox to take up the remaining space beside the sidebar -->
         <div class="flex justify-end">
 
           <div v-if="messages !== null && selectedConversationId && currentUser" class=" px-1 sm:px-1 lg:px-1 w-full">
@@ -473,19 +465,15 @@ onMounted( async () => {
               :messages="messages"
               :participants="participants"
               :currentUser="currentUser"
-              
+              :conversation="selectedConversation"
             />
           </div>
 
-          <div v-else class="flex items-center justify-center w-full h-screen">
+          <div v-else-if="!selectedConversationId" class="flex items-center justify-center w-full h-screen">
             <div class="flex-col justify-center items-center w-full">
               <img class="h-20 w-20 mx-auto" src="../../../icons/comments.png">
               <h3 class="w-full text-center py-6 text-xl font-extrabold text-black">Click Create New Chat and start chatting!</h3>
             </div>
-          </div>
-
-          <div v-if="invitationSent">
-            <InvitationSentNotification class="mt-12" />
           </div>
         </div>
       </main> 
