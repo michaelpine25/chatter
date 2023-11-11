@@ -196,30 +196,29 @@ const deleteInvite = (id) => {
 }
 
 const acceptInvite = (id) => {
-  console.log(invitations.value.invitations);
   axios.post('/api/invitation/accept', {
       conversationId: id
   }).then((response) => {
     const indexToAccept = invitations.value.invitations.findIndex(invitation => invitation.conversation_id === id);
     invitations.value.invitations.splice(indexToAccept, 1);
+    getConversations()
   }).catch((error) => {
       console.error('Failed to accept invitation', error);
   });
-  getConversations()
 }
 
-const listenForInvite = async (currentUser) => {
-  await Echo.channel(`invitation-sent`)
-    .listen('InvitationSent', (event) => {
-      // Handle the event data, update the invitation count
-      if(event.recipient.id == currentUser.id) {
-        getInvitations();
-      }
-    });
+const listenForInvite = (currentUser) => {
+  const channel = Echo.channel('invitation-sent');
+
+  channel.listen('InvitationSent', (e) => {
+    if(e.recipient.id == currentUser.id) {
+      getInvitations();
+    }
+  });
 }
 
-const listenForInvitationAccepted = async () => {
-  await Echo.channel(`invitation-accepted`)
+const listenForInvitationAccepted = () => {
+  Echo.channel(`invitation-accepted`)
     .listen('InvitationAccepted', (event) => {
       if(selectedConversationId.value == event.conversationId) {
         fetchParticipants(event.conversationId);
@@ -227,12 +226,13 @@ const listenForInvitationAccepted = async () => {
     });
 }
 
-const listenForNewMessage = async () => {
-  await Echo.channel(`message`)
-  .listen('MessageSent', (event) => {
-    if(selectedConversationId.value == event.conversationId) {
+const listenForNewMessage = () => {
+  const channel = Echo.channel(`message`);
+  channel.listen('MessageSent', (event) => {
+    console.log('message sent');
+    if (selectedConversationId.value == event.conversationId) {
       messages.value = [...messages.value, event.message];
-    }else{
+    } else {
       getConversations();
     }
   });
@@ -242,9 +242,9 @@ onMounted( async () => {
   getConversations();
   getInvitations();
   await getCurrentUser();
+  listenForNewMessage();
   listenForInvite(currentUser.value);
   listenForInvitationAccepted();
-  listenForNewMessage();
 });
 
 </script>
@@ -326,18 +326,13 @@ onMounted( async () => {
             </ul>
           </nav>
         </div>
-
-        <div class="absolute bottom-4 left-6 right-6 ">
-          <div v-if="!creatingChat && !selectedConversationId"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 animate-bounce mx-auto mb-2 text-blue-500">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75l3 3m0 0l3-3m-3 3v-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-        <button @click="toggleCreatingChat" class="w-full justify-center group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 bg-gray-100 hover:bg-gray-200 hover:text-blue-500">
+      </div>
+      
+      <div class="absolute bottom-4 left-6 right-6 z-30">
+        <button @click="toggleCreatingChat" class=" w-[240px] justify-center group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 bg-gray-100 hover:bg-gray-200 hover:text-blue-500">
           Create New Chat!
         </button>
       </div>
-    </div>
-
     </div>
     <!-- Static sidebar for desktop -->
     <div  class="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-[295px] lg:flex-col" >
