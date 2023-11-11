@@ -208,8 +208,8 @@ const acceptInvite = (id) => {
   getConversations()
 }
 
-const listenForInvite = (currentUser) => {
-  Echo.channel(`invitation-sent`)
+const listenForInvite = async (currentUser) => {
+  await Echo.channel(`invitation-sent`)
     .listen('InvitationSent', (event) => {
       // Handle the event data, update the invitation count
       if(event.recipient.id == currentUser.id) {
@@ -218,8 +218,8 @@ const listenForInvite = (currentUser) => {
     });
 }
 
-const listenForInvitationAccepted = () => {
-  Echo.channel(`invitation-accepted`)
+const listenForInvitationAccepted = async () => {
+  await Echo.channel(`invitation-accepted`)
     .listen('InvitationAccepted', (event) => {
       if(selectedConversationId.value == event.conversationId) {
         fetchParticipants(event.conversationId);
@@ -227,8 +227,8 @@ const listenForInvitationAccepted = () => {
     });
 }
 
-const listenForNewMessage = () => {
-  Echo.channel(`message`)
+const listenForNewMessage = async () => {
+  await Echo.channel(`message`)
   .listen('MessageSent', (event) => {
     if(selectedConversationId.value == event.conversationId) {
       messages.value = [...messages.value, event.message];
@@ -244,8 +244,7 @@ onMounted( async () => {
   await getCurrentUser();
   listenForInvite(currentUser.value);
   listenForInvitationAccepted();
-  listenForNewMessage()
-
+  listenForNewMessage();
 });
 
 </script>
@@ -297,7 +296,7 @@ onMounted( async () => {
                           <div class="min-w-0 flex align-left items-start flex-col">
                             <div class="text-md font-semibold leading-6 text-gray-900 flex">{{ shortenName(conversation.name) }}</div>
                             <div v-if="conversation.last_message">
-                              <div class="truncate text-xs leading-5 text-gray-500 max-w-[1950px]">{{conversation.last_message.user.name}}: 
+                              <div class="truncate text-xs leading-5 text-gray-500 max-w-[1950px]">{{shortenName(conversation.last_message.user.name)}}: 
                                 <span v-if="conversation.last_message.content">
                                   {{shortenName(conversation.last_message.content)}}
                                 </span>
@@ -375,7 +374,7 @@ onMounted( async () => {
                         <div class="min-w-0 flex align-left items-start flex-col">
                           <div class="text-md font-semibold leading-6 text-gray-900 flex">{{ shortenName(conversation.name) }}</div>
                           <div v-if="conversation.last_message">
-                            <div class="truncate text-xs leading-5 text-gray-500 max-w-[1950px]">{{conversation.last_message.user.name}}: 
+                            <div class="truncate text-xs leading-5 text-gray-500 max-w-[1950px]">{{shortenName(conversation.last_message.user.name)}}: 
                               <span v-if="conversation.last_message.content">
                                 {{shortenName(conversation.last_message.content)}}
                               </span>
