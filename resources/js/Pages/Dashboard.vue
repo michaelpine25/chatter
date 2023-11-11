@@ -208,17 +208,17 @@ const acceptInvite = (id) => {
 }
 
 const listenForInvite = (currentUser) => {
-  const channel = Echo.channel('invitation-sent');
-
-  channel.listen('InvitationSent', (e) => {
-    if(e.recipient.id == currentUser.id) {
-      getInvitations();
-    }
-  });
+   Echo.channel(`invitation-sent`)
+    .listen('InvitationSent', (event) => {
+      // Handle the event data, update the invitation count
+      if(event.recipient.id == currentUser.id) {
+        getInvitations();
+      }
+    });
 }
 
 const listenForInvitationAccepted = () => {
-  Echo.channel(`invitation-accepted`)
+   Echo.channel(`invitation-accepted`)
     .listen('InvitationAccepted', (event) => {
       if(selectedConversationId.value == event.conversationId) {
         fetchParticipants(event.conversationId);
@@ -227,12 +227,11 @@ const listenForInvitationAccepted = () => {
 }
 
 const listenForNewMessage = () => {
-  const channel = Echo.channel(`message`);
-  channel.listen('MessageSent', (event) => {
-    console.log('message sent');
-    if (selectedConversationId.value == event.conversationId) {
+ Echo.channel(`message`)
+  .listen('MessageSent', (event) => {
+    if(selectedConversationId.value == event.conversationId) {
       messages.value = [...messages.value, event.message];
-    } else {
+    }else{
       getConversations();
     }
   });
