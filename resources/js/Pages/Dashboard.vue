@@ -167,7 +167,7 @@ const formatTimeAgo = (timestamp) => {
   const minutesAgo = Math.floor(timeDifference / 60000);
 
   if (minutesAgo < 1) {
-    return 'Just now';
+    return 'Now';
   } else if (minutesAgo < 60) {
     return `${minutesAgo} min${minutesAgo > 1 ? 's' : ''}`;
   } else if (minutesAgo < 1440) { // 1440 minutes in 1 day (24 hours)

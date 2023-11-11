@@ -50,7 +50,7 @@ const successNotification = () => {
         </ul>
       </div>
     </div>
-      <button @click="toggleInvitingMember" class=" mx-auto w-3/4 justify-center group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 bg-gray-100 hover:bg-gray-200 hover:text-blue-500">
+      <button @click="toggleInvitingMember" class="sm:hidden mx-auto w-3/4 justify-center group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 bg-gray-100 hover:bg-gray-200 hover:text-blue-500">
         Invite Member
       </button>
   </div>
